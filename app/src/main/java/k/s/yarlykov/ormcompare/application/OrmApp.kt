@@ -17,10 +17,9 @@ class OrmApp : Application() {
 
         val realmConfig = RealmConfiguration
             .Builder()
-            .name("")
+            .name("realm_realm")
             .build()
 
         Realm.setDefaultConfiguration(realmConfig)
-
     }
 }

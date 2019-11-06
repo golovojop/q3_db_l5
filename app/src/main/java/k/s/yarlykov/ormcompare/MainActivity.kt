@@ -3,29 +3,42 @@ package k.s.yarlykov.ormcompare
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import k.s.yarlykov.ormcompare.data.model.github.GitUser
+import io.realm.Realm
+import k.s.yarlykov.ormcompare.domain.UserGit
 import k.s.yarlykov.ormcompare.data.network.GitHelper
+import k.s.yarlykov.ormcompare.data.orm.RealmDbProvider
+import k.s.yarlykov.ormcompare.domain.User
+import k.s.yarlykov.ormcompare.repository.OrmRepo
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
+    val disposables = CompositeDisposable()
+
+
+    private val ormRepo by lazy {
+        Realm.init(this)
+        OrmRepo(RealmDbProvider())
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-    }
 
-    override fun onResume() {
-        super.onResume()
-
-        val d = GitHelper.getUsers()
+        disposables.add(ormRepo.getUsers()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(::printUsers, ::printError)
+            .subscribe(::printUsers, ::printError))
     }
 
-    private fun printUsers(list: List<GitUser>) {
+    override fun onDestroy() {
+        super.onDestroy()
+        disposables.clear()
+    }
 
+    private fun printUsers(list: List<User>) {
         tvInfo.text = list.map {
             "${it.id} ${it.login}"
         }.joinToString("\n")

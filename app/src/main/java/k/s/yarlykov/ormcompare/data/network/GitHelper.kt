@@ -1,7 +1,7 @@
 package k.s.yarlykov.ormcompare.data.network
 
 import io.reactivex.Single
-import k.s.yarlykov.ormcompare.data.model.github.GitUser
+import k.s.yarlykov.ormcompare.domain.UserGit
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -15,7 +15,7 @@ object GitHelper {
 
     private val api by lazy { initApiAdapter() }
 
-    fun getUsers() : Single<List<GitUser>> {
+    fun getUsers() : Single<List<UserGit>> {
         return api
             .getUsers()
             .flatMap {okHttpResponse ->

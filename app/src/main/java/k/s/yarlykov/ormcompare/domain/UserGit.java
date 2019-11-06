@@ -1,9 +1,9 @@
-package k.s.yarlykov.ormcompare.data.model.github;
+package k.s.yarlykov.ormcompare.domain;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class GitUser {
+public class UserGit {
 
     @SerializedName("login")
     @Expose
@@ -60,4 +60,32 @@ public class GitUser {
     @Expose
     public boolean siteAdmin;
 
+    public UserGit(String login, int id, String nodeId,
+                   String avatarUrl, String gravatarId,
+                   String url, String htmlUrl, String followersUrl, String followingUrl,
+                   String gistsUrl, String starredUrl, String subscriptionsUrl,
+                   String organizationsUrl, String reposUrl, String eventsUrl,
+                   String receivedEventsUrl, String type, boolean siteAdmin) {
+        this.login = login;
+        this.id = id;
+        this.nodeId = nodeId;
+        this.avatarUrl = avatarUrl;
+        this.gravatarId = gravatarId;
+        this.url = url;
+        this.htmlUrl = htmlUrl;
+        this.followersUrl = followersUrl;
+        this.followingUrl = followingUrl;
+        this.gistsUrl = gistsUrl;
+        this.starredUrl = starredUrl;
+        this.subscriptionsUrl = subscriptionsUrl;
+        this.organizationsUrl = organizationsUrl;
+        this.reposUrl = reposUrl;
+        this.eventsUrl = eventsUrl;
+        this.receivedEventsUrl = receivedEventsUrl;
+        this.type = type;
+        this.siteAdmin = siteAdmin;
+    }
+
+    public UserGit() {
+    }
 }
