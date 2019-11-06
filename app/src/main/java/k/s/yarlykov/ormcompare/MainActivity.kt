@@ -2,21 +2,20 @@ package k.s.yarlykov.ormcompare
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.realm.Realm
-import k.s.yarlykov.ormcompare.domain.UserGit
-import k.s.yarlykov.ormcompare.data.network.GitHelper
 import k.s.yarlykov.ormcompare.data.orm.RealmDbProvider
 import k.s.yarlykov.ormcompare.domain.User
+import k.s.yarlykov.ormcompare.domain.UserRealm
 import k.s.yarlykov.ormcompare.repository.OrmRepo
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-
     val disposables = CompositeDisposable()
-
 
     private val ormRepo by lazy {
         Realm.init(this)
@@ -27,10 +26,19 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        disposables.add(ormRepo.getUsers()
+        val d = ormRepo
+            .loadToRealm()
             .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(::printUsers, ::printError))
+            .subscribe {
+                disposables.add(
+                    ormRepo.getUsers()
+                        .doOnSuccess {
+                            logIt("${Thread.currentThread().name}")
+                        }
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(::printUsers, ::printError)
+                )
+            }
     }
 
     override fun onDestroy() {
@@ -40,9 +48,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun printUsers(list: List<User>) {
         tvInfo.text = list.map {
-            "${it.id} ${it.login}"
+            "${it.id}: ${it.login}"
         }.joinToString("\n")
-
     }
 
     private fun printError(t: Throwable) {

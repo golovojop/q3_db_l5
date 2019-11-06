@@ -1,5 +1,6 @@
 package k.s.yarlykov.ormcompare.data.orm
 
+import io.realm.Case
 import io.realm.Realm
 import io.realm.RealmResults
 import k.s.yarlykov.ormcompare.domain.User
@@ -35,7 +36,11 @@ class RealmDbProvider : DbProvider<UserRealm, List<User>> {
     override fun select(): List<User> {
 
         return Realm.getDefaultInstance().use { realm ->
-            val results: RealmResults<UserRealm> = realm.where(UserRealm::class.java).findAll()
+            val results: RealmResults<UserRealm> =
+                realm
+                    .where(UserRealm::class.java)
+                    .contains("login", "tak", Case.SENSITIVE )
+                    .findAll()
 
             realm.copyFromRealm(results)
                 .asSequence()
