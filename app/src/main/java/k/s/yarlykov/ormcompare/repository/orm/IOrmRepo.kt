@@ -1,4 +1,4 @@
-package k.s.yarlykov.ormcompare.repository
+package k.s.yarlykov.ormcompare.repository.orm
 
 import io.reactivex.Completable
 import io.reactivex.Single

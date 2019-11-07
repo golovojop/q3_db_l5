@@ -8,21 +8,24 @@ import k.s.yarlykov.ormcompare.domain.UserRealm
 
 class SqliteDbProvider(private val db: SQLiteDatabase) : DbProvider<UserRealm, List<User>> {
 
-    private val tabName = "UserRealm"
-    private val colId = "id"
-    private val colLogin = "login"
-    private val colAvatar = "avatarUrl"
-    private val colReposUrl = "reposUrl"
+    companion object {
+        private val tabName = "UserRealm"
+        private val colId = "id"
+        private val colLogin = "login"
+        private val colAvatar = "avatarUrl"
+        private val colReposUrl = "reposUrl"
 
-    fun createTable(db: SQLiteDatabase) {
+        fun createTable(db: SQLiteDatabase) {
 
-        val query = "CREATE TABLE " + tabName + " (" +
-                colId + " INTEGER PRIMARY KEY NOT NULL, " +
-                colLogin + " TEXT NOT NULL, " +
-                colAvatar + " TEXT, " +
-                colReposUrl + " TEXT"
-        db.execSQL(query)
+            val query = "CREATE TABLE " + tabName + " (" +
+                    colId + " INTEGER PRIMARY KEY NOT NULL, " +
+                    colLogin + " TEXT NOT NULL, " +
+                    colAvatar + " TEXT, " +
+                    colReposUrl + " TEXT)"
+            db.execSQL(query)
+        }
     }
+
 
     override fun insert(u: UserRealm) {
         db.insert(tabName, null, initContentValues(u))

@@ -14,13 +14,13 @@ class SqliteHelper(
     version: Int
 ) : SQLiteOpenHelper(context, dbName, factory, version) {
 
-    override fun onCreate(db: SQLiteDatabase?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onCreate(db: SQLiteDatabase) {
+        SqliteDbProvider.createTable(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    fun createDbProvider(db: SQLiteDatabase) : DbProvider<UserRealm, List<User>> = SqliteDbProvider(db)
+    fun createDbProvider() : DbProvider<UserRealm, List<User>> = SqliteDbProvider(writableDatabase)
 }
