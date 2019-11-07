@@ -2,15 +2,12 @@ package k.s.yarlykov.ormcompare
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.realm.Realm
-import k.s.yarlykov.ormcompare.data.orm.RealmDbProvider
+import k.s.yarlykov.ormcompare.data.db.orm.RealmDbProvider
 import k.s.yarlykov.ormcompare.domain.User
-import k.s.yarlykov.ormcompare.domain.UserRealm
 import k.s.yarlykov.ormcompare.repository.OrmRepo
 import kotlinx.android.synthetic.main.activity_main.*
 

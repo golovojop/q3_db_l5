@@ -1,34 +1,35 @@
-package k.s.yarlykov.ormcompare.data.orm
+package k.s.yarlykov.ormcompare.data.db.orm
 
 import io.realm.Case
 import io.realm.Realm
 import io.realm.RealmResults
+import k.s.yarlykov.ormcompare.data.db.DbProvider
 import k.s.yarlykov.ormcompare.domain.User
 import k.s.yarlykov.ormcompare.domain.UserRealm
 import k.s.yarlykov.ormcompare.domain.toUser
 
 class RealmDbProvider : DbProvider<UserRealm, List<User>> {
 
-    override fun insert(t: UserRealm) {
+    override fun insert(u: UserRealm) {
         Realm.getDefaultInstance().use { realm ->
             realm.beginTransaction()
-            realm.insertOrUpdate(t)
+            realm.insertOrUpdate(u)
             realm.commitTransaction()
         }
     }
 
-    override fun update(t: UserRealm) {
+    override fun update(u: UserRealm) {
         Realm.getDefaultInstance().use { realm ->
             realm.executeTransaction {
-                it.copyToRealmOrUpdate(t)
+                it.copyToRealmOrUpdate(u)
             }
         }
     }
 
-    override fun delete(t: UserRealm) {
+    override fun delete(u: UserRealm) {
         Realm.getDefaultInstance().use { realm ->
             realm.executeTransaction {
-                it.where(UserRealm::class.java).contains("..", t.login).findAll().deleteFirstFromRealm()
+                it.where(UserRealm::class.java).contains("login", u.login).findAll().deleteFirstFromRealm()
             }
         }
     }

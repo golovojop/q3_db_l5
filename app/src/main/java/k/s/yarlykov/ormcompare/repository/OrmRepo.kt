@@ -2,12 +2,10 @@ package k.s.yarlykov.ormcompare.repository
 
 import io.reactivex.Completable
 import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
 import k.s.yarlykov.ormcompare.data.network.GitHelper
-import k.s.yarlykov.ormcompare.data.orm.DbProvider
+import k.s.yarlykov.ormcompare.data.db.DbProvider
 import k.s.yarlykov.ormcompare.domain.User
 import k.s.yarlykov.ormcompare.domain.UserRealm
-import k.s.yarlykov.ormcompare.domain.toUser
 import k.s.yarlykov.ormcompare.domain.toUserRealm
 
 class OrmRepo(private val dbRealm: DbProvider<UserRealm, List<User>>) : IOrmRepo {
