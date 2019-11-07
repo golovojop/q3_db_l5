@@ -1,7 +1,10 @@
 package k.s.yarlykov.ormcompare.data.network
 
+import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.subjects.BehaviorSubject
 import k.s.yarlykov.ormcompare.domain.UserGit
+import k.s.yarlykov.ormcompare.logIt
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -15,17 +18,35 @@ object GitHelper {
 
     private val api by lazy { initApiAdapter() }
 
-    fun getUsers() : Single<List<UserGit>> {
-        return api
-            .getUsers()
-            .flatMap {okHttpResponse ->
-                if(okHttpResponse.code() != HTTP_OK) {
+    private val loadedUsers = BehaviorSubject.create<List<UserGit>>()
+
+
+    fun load() {
+//        val d = api.getUsers().subscribe {
+//
+//        }
+
+        api.getUsers()
+            .flatMapObservable { okHttpResponse ->
+
+                logIt("Git response code = ${okHttpResponse.code()}")
+
+                if (okHttpResponse.code() != HTTP_OK) {
                     throw Throwable("Can't receive Users list")
                 }
-                Single.fromCallable {
+                Observable.fromCallable {
+                    logIt("git response length = ${okHttpResponse.body()!!.size}")
                     okHttpResponse.body()!!
                 }
             }
+            .doOnError{
+                logIt("load:doOnError ${it.stackTrace.toString()}")
+            }
+            .subscribe(loadedUsers)
+    }
+
+    fun getUsers(): Observable<List<UserGit>> {
+        return loadedUsers.hide()
     }
 
     private fun initApiAdapter(): GitApi {

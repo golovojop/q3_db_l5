@@ -13,13 +13,13 @@ import k.s.yarlykov.ormcompare.rotate
 class OrmRepo(private val dbRealm: DbProvider<UserRealm, List<User>>) : IOrmRepo {
 
     // Загрузить в БД из сети
-    override fun loadToRealm(): Completable = Completable.fromSingle(
+    override fun loadToRealm(count : Int): Completable = Completable.fromSingle(
         GitHelper.getUsers()
+            .firstOrError()
             .doOnSuccess { gitUsers ->
 
                 // Для теста увеличиваю количество записей в count раз.
                 // При каждой итерации меняю поле login цикличным сдвигом символов и добавлением id
-                val count = 3
                 val step = gitUsers.map { it.id }.max()!!
                 (0 until count).forEach {i ->
                     gitUsers.forEach { user ->

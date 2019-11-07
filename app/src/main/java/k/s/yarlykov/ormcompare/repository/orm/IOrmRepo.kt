@@ -8,5 +8,5 @@ import k.s.yarlykov.ormcompare.domain.UserGit
 interface IOrmRepo {
 
     fun getUsers(): Single<List<User>>
-    fun loadToRealm() : Completable
+    fun loadToRealm(count : Int = 1) : Completable
 }

@@ -13,6 +13,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
+    private val layerLoading = 0
+    private val layerContent = 1
+
     private val disposables = CompositeDisposable()
 
     private lateinit var ormRepo: IOrmRepo
@@ -25,25 +28,74 @@ class MainActivity : AppCompatActivity() {
         ormRepo = OrmApp.getInstance().getOrmRepo()
         sqliteRepo = OrmApp.getInstance().getSqliteRepo()
 
-        val d = ormRepo
-            // Запись в базу из сети
-            .loadToRealm()
-            .subscribeOn(Schedulers.io())
-            .subscribe {
-                disposables.add(
-                    // Чтение из базы в массив
-                    ormRepo.getUsers()
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(::printUsers, ::printError)
-                )
-            }
+        btnRealm.setOnClickListener {
+            readRealm()
+        }
 
-        disposables.add(d)
+        btnSql.setOnClickListener {
+            readSqlite()
+        }
+
+        loadFromNetwork()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         disposables.clear()
+    }
+
+
+    private fun loadFromNetwork() {
+
+        animator.displayedChild = layerLoading
+
+        disposables.add(ormRepo.loadToRealm(count = 1)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe{animator.displayedChild = layerContent})
+
+        disposables.add(sqliteRepo.loadToDb(count = 1)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe{animator.displayedChild = layerContent})
+    }
+
+    private fun readRealm() {
+
+        val timeStart : Long = System.currentTimeMillis()
+
+        disposables.add(
+            // Чтение из базы в массив
+            ormRepo.getUsers()
+                .subscribeOn(Schedulers.computation())
+                .map {li ->
+                    Pair(timeStart, li)
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(::printRealmTime, ::printError)
+        )
+    }
+
+    private fun readSqlite() {
+        val timeStart : Long = System.currentTimeMillis()
+
+        disposables.add(
+            // Чтение из базы в массив
+            sqliteRepo.getUsers()
+                .subscribeOn(Schedulers.computation())
+                .map {li ->
+                    Pair(timeStart, li)
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(::printRealmTime, ::printError)
+        )
+
+    }
+
+    private fun printRealmTime(data : Pair<Long, List<User>>) {
+        val timeEnd = System.currentTimeMillis()
+        printUsers(data.second)
+        logIt("${data.second.size} records received from Realm for ${timeEnd - data.first} ms ")
     }
 
     private fun printUsers(list: List<User>) {
