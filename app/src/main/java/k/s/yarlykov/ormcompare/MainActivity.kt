@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         sqliteRepo = OrmApp.getInstance().getSqliteRepo()
 
         btnRealm.setOnClickListener {
-            readTest(ormRepo, createResultDrawer(pbRealm, tvOrm))
+            readTest(ormRepo, createResultDrawer(pbRealm, tvRealm))
         }
 
         btnSql.setOnClickListener {

@@ -3,7 +3,8 @@
     <string name="app_title">Orm vs Sql</string>
     <string name="start_realm">realm</string>
     <string name="start_sql">sql</string>
-    <string name="result_orm">REALM result:</string>
-    <string name="result_sql">SQL result:</string>
+    <string name="result_realm">REALM</string>
+    <string name="result_room">ROOM</string>
+    <string name="result_sql">SQL</string>
 
 </resources>
