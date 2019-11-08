@@ -18,7 +18,7 @@ class SqliteRepo(private val dbSql: DbProvider<UserRealm, List<User>>) : ISqlite
         }
     }
 
-    override fun loadToDb(count: Int): Completable = Completable.fromSingle(
+    override fun loadUsers(count: Int): Completable = Completable.fromSingle(
         GitHelper.getUsers()
             .firstOrError()
             .doOnSuccess { gitUsers ->
@@ -39,4 +39,8 @@ class SqliteRepo(private val dbSql: DbProvider<UserRealm, List<User>>) : ISqlite
                     }
                 }
             })
+
+    override fun clearUsers() {
+        dbSql.clear()
+    }
 }

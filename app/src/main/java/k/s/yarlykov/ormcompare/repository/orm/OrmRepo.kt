@@ -13,7 +13,7 @@ import k.s.yarlykov.ormcompare.rotate
 class OrmRepo(private val dbRealm: DbProvider<UserRealm, List<User>>) : IOrmRepo {
 
     // Загрузить в БД из сети
-    override fun loadToRealm(count : Int): Completable = Completable.fromSingle(
+    override fun loadUsers(count : Int): Completable = Completable.fromSingle(
         GitHelper.getUsers()
             .firstOrError()
             .doOnSuccess { gitUsers ->
@@ -41,6 +41,10 @@ class OrmRepo(private val dbRealm: DbProvider<UserRealm, List<User>>) : IOrmRepo
         return Single.fromCallable {
             dbRealm.select()
         }
+    }
+
+    override fun clearUsers() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
 

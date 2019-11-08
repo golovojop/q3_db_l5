@@ -9,11 +9,11 @@ import k.s.yarlykov.ormcompare.domain.UserRealm
 class SqliteDbProvider(private val db: SQLiteDatabase) : DbProvider<UserRealm, List<User>> {
 
     companion object {
-        private val tabName = "UserRealm"
-        private val colId = "id"
-        private val colLogin = "login"
-        private val colAvatar = "avatarUrl"
-        private val colReposUrl = "reposUrl"
+        private const val tabName = "User"
+        private const val colId = "id"
+        private const val colLogin = "login"
+        private const val colAvatar = "avatarUrl"
+        private const val colReposUrl = "reposUrl"
 
         fun createTable(db: SQLiteDatabase) {
 
@@ -66,6 +66,10 @@ class SqliteDbProvider(private val db: SQLiteDatabase) : DbProvider<UserRealm, L
         }
 
         return li
+    }
+
+    override fun clear() {
+        db.execSQL("delete from $tabName")
     }
 
     private fun initContentValues(userRealm: UserRealm): ContentValues {

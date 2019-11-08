@@ -5,4 +5,5 @@ interface DbProvider<in U, out R> {
     fun update(u : U)
     fun delete(u : U)
     fun select() : R
+    fun clear()
 }

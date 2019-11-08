@@ -48,4 +48,8 @@ class RealmDbProvider : DbProvider<UserRealm, List<User>> {
                 .toList()
         }
     }
+
+    override fun clear() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }
