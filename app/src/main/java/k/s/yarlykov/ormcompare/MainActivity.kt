@@ -2,6 +2,7 @@ package k.s.yarlykov.ormcompare
 
 import android.os.Bundle
 import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -29,6 +30,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        setTitle(R.string.app_title)
+
         pbRealm.max = progressBarMax
         pbSql.max = progressBarMax
 
@@ -36,11 +39,11 @@ class MainActivity : AppCompatActivity() {
         sqliteRepo = OrmApp.getInstance().getSqliteRepo()
 
         btnRealm.setOnClickListener {
-            readTest(ormRepo, createResultDrawer(pbRealm))
+            readTest(ormRepo, createResultDrawer(pbRealm, tvOrm))
         }
 
         btnSql.setOnClickListener {
-            readTest(sqliteRepo, createResultDrawer(pbSql))
+            readTest(sqliteRepo, createResultDrawer(pbSql, tvSql))
         }
 
         loadFromNetwork()
@@ -71,16 +74,20 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private fun readTest(repo : IRepo, resultHandler : (Long) -> Unit ) {
+    private fun readTest(repo : IRepo, resultHandler : (Pair<Int, Long>) -> Unit ) {
 
         val timeStart : Long = System.currentTimeMillis()
+        var records = 0
 
         disposables.add(
             // Чтение из базы в массив
             repo.getUsers()
                 .subscribeOn(Schedulers.computation())
+                .doOnSuccess {
+                    records = it.size
+                }
                 .map {
-                    timeStart
+                    Pair(records, timeStart)
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resultHandler, ::printError)
@@ -88,13 +95,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Создает функцию для отрисовки результата теста
-    private fun createResultDrawer(view : ProgressBar) : (Long) -> Unit {
+    private fun createResultDrawer(pbView : ProgressBar, tView : TextView) : (Pair<Int, Long>) -> Unit {
 
-        return fun(timeStart : Long) {
+        return fun(data : Pair<Int, Long>) {
             val timeEnd = System.currentTimeMillis()
 
-            logIt("finished in ${(timeEnd - timeStart).toInt()} ms")
-            view.progress = ((timeEnd - timeStart).toInt())
+            val result = "${tView.text}\n\nRead ${data.first} records\nTime ${(timeEnd - data.second).toInt()} ms"
+            tView.text = result
+
+            logIt("finished in ${(timeEnd - data.second).toInt()} ms")
+            pbView.progress = ((timeEnd - data.second).toInt())
         }
     }
 
