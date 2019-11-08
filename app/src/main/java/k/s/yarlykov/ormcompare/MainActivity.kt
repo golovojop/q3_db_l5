@@ -44,7 +44,6 @@ class MainActivity : AppCompatActivity() {
         disposables.clear()
     }
 
-
     private fun loadFromNetwork() {
 
         animator.displayedChild = layerLoading
@@ -77,6 +76,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun readSqlite() {
+        
         val timeStart : Long = System.currentTimeMillis()
 
         disposables.add(

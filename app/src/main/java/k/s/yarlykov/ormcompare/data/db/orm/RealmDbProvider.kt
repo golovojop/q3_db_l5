@@ -12,10 +12,6 @@ class RealmDbProvider : DbProvider<UserRealm, List<User>> {
     override fun insert(u: UserRealm) {
         Realm.getDefaultInstance().use { realm ->
             realm.beginTransaction()
-
-//            val user = realm.copyToRealmOrUpdate(u)
-//            val user = realm.copyToRealm(u)
-//            realm.insertOrUpdate(user)
             realm.insertOrUpdate(u)
             realm.commitTransaction()
         }

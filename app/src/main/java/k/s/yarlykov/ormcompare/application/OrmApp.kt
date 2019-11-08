@@ -25,7 +25,6 @@ class OrmApp : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
-        GitHelper.load()
     }
 
 
@@ -33,13 +32,12 @@ class OrmApp : Application() {
 
     fun getSqliteRepo() : ISqliteRepo = sqliteRepository
 
-
     // Realm хранит базенку в папке data/data/files/<db_name>
     private val ormRepository : IOrmRepo by lazy {
         Realm.init(this)
         val realmConfig = RealmConfiguration
             .Builder()
-            .name("realm.$dbName")
+            .name(dbName)
             .build()
 
         Realm.setDefaultConfiguration(realmConfig)
