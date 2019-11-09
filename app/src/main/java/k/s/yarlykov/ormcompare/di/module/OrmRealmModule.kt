@@ -5,11 +5,15 @@ import dagger.Module
 import dagger.Provides
 import io.realm.Realm
 import io.realm.RealmConfiguration
-import k.s.yarlykov.ormcompare.application.OrmApp
 import k.s.yarlykov.ormcompare.data.db.orm.RealmDbProvider
 import k.s.yarlykov.ormcompare.repository.IRepo
 import k.s.yarlykov.ormcompare.repository.orm.OrmRepo
+import javax.inject.Named
 import javax.inject.Singleton
+
+/**
+ * Realm хранит базенку в папке data/data/files/<db_name>
+ */
 
 @Module
 class OrmRealmModule(private val dbName: String) {
@@ -22,7 +26,7 @@ class OrmRealmModule(private val dbName: String) {
 
         return RealmConfiguration
             .Builder()
-            .name(OrmApp.dbName)
+            .name(dbName)
             .build()
     }
 
@@ -30,8 +34,9 @@ class OrmRealmModule(private val dbName: String) {
     @Provides
     fun provideRealmDbProvider(): RealmDbProvider = RealmDbProvider()
 
-    @Singleton
     @Provides
+    @Named("realm_repo")
+    @Singleton
     fun provideRealmRepository(
         context: Context,
         realmConfig: RealmConfiguration,

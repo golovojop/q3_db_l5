@@ -4,10 +4,11 @@ import dagger.Component
 import k.s.yarlykov.ormcompare.MainActivity
 import k.s.yarlykov.ormcompare.di.module.AppModule
 import k.s.yarlykov.ormcompare.di.module.OrmRealmModule
+import k.s.yarlykov.ormcompare.di.module.SqliteModule
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules=[AppModule::class, OrmRealmModule::class/*, NetworkModule::class*/])
+@Component(modules=[AppModule::class, OrmRealmModule::class, SqliteModule::class/*, NetworkModule::class*/])
 interface AppComponent {
     fun inject(activity : MainActivity)
 }

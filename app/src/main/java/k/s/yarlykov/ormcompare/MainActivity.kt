@@ -14,6 +14,7 @@ import k.s.yarlykov.ormcompare.repository.orm.IOrmRepo
 import k.s.yarlykov.ormcompare.repository.sqlite.ISqliteRepo
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
+import javax.inject.Named
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,11 +26,12 @@ class MainActivity : AppCompatActivity() {
     private val disposables = CompositeDisposable()
 
     @Inject
+    @field:Named("realm_repo")
     lateinit var ormRepo: IRepo
-    private lateinit var sqliteRepo: IRepo
 
     @Inject
-    lateinit var app : OrmApp
+    @field:Named("sqlite_repo")
+    lateinit var sqliteRepo: IRepo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,9 +43,6 @@ class MainActivity : AppCompatActivity() {
 
         pbRealm.max = progressBarMax
         pbSql.max = progressBarMax
-
-//        ormRepo = app.getOrmRepo()
-        sqliteRepo = app.getSqliteRepo()
 
         btnRealm.setOnClickListener {
             readTest(ormRepo, createResultDrawer(pbRealm, tvRealm))
