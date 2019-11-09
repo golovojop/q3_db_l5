@@ -13,6 +13,7 @@ import k.s.yarlykov.ormcompare.repository.IRepo
 import k.s.yarlykov.ormcompare.repository.orm.IOrmRepo
 import k.s.yarlykov.ormcompare.repository.sqlite.ISqliteRepo
 import kotlinx.android.synthetic.main.activity_main.*
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,17 +27,22 @@ class MainActivity : AppCompatActivity() {
     private lateinit var ormRepo: IOrmRepo
     private lateinit var sqliteRepo: ISqliteRepo
 
+    @Inject
+    lateinit var app : OrmApp
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        (application as OrmApp).appComponent.inject(this)
 
         setTitle(R.string.app_title)
 
         pbRealm.max = progressBarMax
         pbSql.max = progressBarMax
 
-        ormRepo = OrmApp.getInstance().getOrmRepo()
-        sqliteRepo = OrmApp.getInstance().getSqliteRepo()
+        ormRepo = app.getOrmRepo()
+        sqliteRepo = app.getSqliteRepo()
 
         btnRealm.setOnClickListener {
             readTest(ormRepo, createResultDrawer(pbRealm, tvRealm))
