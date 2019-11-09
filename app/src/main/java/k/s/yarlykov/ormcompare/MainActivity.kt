@@ -24,8 +24,9 @@ class MainActivity : AppCompatActivity() {
 
     private val disposables = CompositeDisposable()
 
-    private lateinit var ormRepo: IOrmRepo
-    private lateinit var sqliteRepo: ISqliteRepo
+    @Inject
+    lateinit var ormRepo: IRepo
+    private lateinit var sqliteRepo: IRepo
 
     @Inject
     lateinit var app : OrmApp
@@ -41,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         pbRealm.max = progressBarMax
         pbSql.max = progressBarMax
 
-        ormRepo = app.getOrmRepo()
+//        ormRepo = app.getOrmRepo()
         sqliteRepo = app.getSqliteRepo()
 
         btnRealm.setOnClickListener {

@@ -1,4 +1,4 @@
-package k.s.yarlykov.ormcompare.di
+package k.s.yarlykov.ormcompare.di.module
 
 import android.app.Application
 import com.google.gson.FieldNamingPolicy

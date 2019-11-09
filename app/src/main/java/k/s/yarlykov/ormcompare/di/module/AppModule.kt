@@ -1,5 +1,6 @@
-package k.s.yarlykov.ormcompare.di
+package k.s.yarlykov.ormcompare.di.module
 
+import android.content.Context
 import dagger.Module
 import dagger.Provides
 import k.s.yarlykov.ormcompare.application.OrmApp
@@ -12,4 +13,7 @@ class AppModule (private val app : OrmApp) {
     @Singleton
     fun provideApplication() : OrmApp = app
 
+    @Provides
+    @Singleton
+    fun provideContext() : Context = app
 }
