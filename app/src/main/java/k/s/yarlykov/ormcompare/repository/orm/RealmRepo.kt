@@ -5,18 +5,23 @@ import io.reactivex.Single
 import k.s.yarlykov.ormcompare.data.db.DbProvider
 import k.s.yarlykov.ormcompare.data.network.GitHelper
 import k.s.yarlykov.ormcompare.domain.*
+import k.s.yarlykov.ormcompare.logIt
 import k.s.yarlykov.ormcompare.rotate
 
 class RealmRepo(private val dbRealm: DbProvider<UserRealm, List<User>>) : IRealmRepo {
 
-    override fun loadUsers(count: Int): Completable =
+    override fun loadUsers(multiplier : Int): Completable =
         Completable.fromSingle(
             GitHelper.getUsers()
+                .doOnNext{
+                    logIt("RealmRepo::doOnNext thread - ${Thread.currentThread().name}")
+                }
                 .firstOrError()
                 .map { gitUsers ->
-                    multiplyMap(gitUsers, UserGit::toUserRealm)
+                    multiplyMap(gitUsers, multiplier, UserGit::toUserRealm)
                 }
                 .doOnSuccess { realmUsers ->
+                    logIt("RealmRepo::doOnSuccess thread - ${Thread.currentThread().name}")
                     dbRealm.insert(realmUsers)
                 })
 

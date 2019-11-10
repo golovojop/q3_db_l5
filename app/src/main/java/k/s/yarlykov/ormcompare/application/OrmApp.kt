@@ -5,6 +5,7 @@ import k.s.yarlykov.ormcompare.di.component.AppComponent
 import k.s.yarlykov.ormcompare.di.component.DaggerAppComponent
 import k.s.yarlykov.ormcompare.di.module.AppModule
 import k.s.yarlykov.ormcompare.di.module.OrmRealmModule
+import k.s.yarlykov.ormcompare.di.module.OrmRoomModule
 import k.s.yarlykov.ormcompare.di.module.SqliteModule
 
 class OrmApp : Application() {
@@ -23,6 +24,7 @@ class OrmApp : Application() {
             .builder()
             .appModule(AppModule(this))
             .ormRealmModule(OrmRealmModule(dbName))
+            .ormRoomModule(OrmRoomModule(dbName))
             .sqliteModule(SqliteModule(dbName, dbVersion))
 //            .networkModule(NetworkModule(baseUrl))
             .build()

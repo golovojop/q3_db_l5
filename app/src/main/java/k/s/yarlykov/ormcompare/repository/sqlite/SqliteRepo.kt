@@ -5,7 +5,7 @@ import io.reactivex.Single
 import k.s.yarlykov.ormcompare.data.db.DbProvider
 import k.s.yarlykov.ormcompare.data.network.GitHelper
 import k.s.yarlykov.ormcompare.domain.*
-import k.s.yarlykov.ormcompare.rotate
+import k.s.yarlykov.ormcompare.logIt
 
 class SqliteRepo(private val dbSql: DbProvider<UserSqlite, List<User>>) : ISqliteRepo {
 
@@ -15,14 +15,15 @@ class SqliteRepo(private val dbSql: DbProvider<UserSqlite, List<User>>) : ISqlit
         }
     }
 
-    override fun loadUsers(count: Int): Completable =
+    override fun loadUsers(multiplier: Int): Completable =
          Completable.fromSingle(
             GitHelper.getUsers()
                 .firstOrError()
                 .map { gitUsers ->
-                    multiplyMap(gitUsers, UserGit::toUserSqlite)
+                    multiplyMap(gitUsers, multiplier, UserGit::toUserSqlite)
                 }
                 .doOnSuccess { sqliteUsers ->
+                    logIt("SqliteRepo::doOnSuccess thread - ${Thread.currentThread().name}")
                     dbSql.insert(sqliteUsers)
                 }
         )

@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase
 import k.s.yarlykov.ormcompare.data.db.DbProvider
 import k.s.yarlykov.ormcompare.domain.User
 import k.s.yarlykov.ormcompare.domain.UserSqlite
+import k.s.yarlykov.ormcompare.logIt
 
 class SqliteDbProvider(private val db: SQLiteDatabase) : DbProvider<UserSqlite, List<User>> {
 
@@ -33,7 +34,11 @@ class SqliteDbProvider(private val db: SQLiteDatabase) : DbProvider<UserSqlite, 
     }
 
     override fun insert(u: UserSqlite) {
-        db.insert(tabName, null, initContentValues(u))
+        try {
+            db.insert(tabName, null, initContentValues(u))
+        } catch (e: Exception) {
+            logIt("Record with id ${u.id} already exists")
+        }
     }
 
     override fun update(u: UserSqlite) {

@@ -5,7 +5,7 @@ import dagger.Module
 import dagger.Provides
 import io.realm.Realm
 import io.realm.RealmConfiguration
-import k.s.yarlykov.ormcompare.data.db.orm.RealmDbProvider
+import k.s.yarlykov.ormcompare.data.db.realm.RealmDbProvider
 import k.s.yarlykov.ormcompare.repository.IRepo
 import k.s.yarlykov.ormcompare.repository.orm.RealmRepo
 import javax.inject.Named

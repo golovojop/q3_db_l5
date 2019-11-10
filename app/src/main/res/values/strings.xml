@@ -7,6 +7,6 @@
     <string name="header_realm">REALM</string>
     <string name="header_room">ROOM</string>
     <string name="header_sql">SQL</string>
-    <string name="test_result">Result</string>
+    <string name="test_result">No data</string>
 
 </resources>

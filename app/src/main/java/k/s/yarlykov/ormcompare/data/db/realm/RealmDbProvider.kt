@@ -1,4 +1,4 @@
-package k.s.yarlykov.ormcompare.data.db.orm
+package k.s.yarlykov.ormcompare.data.db.realm
 
 import io.realm.Realm
 import io.realm.RealmResults
@@ -12,7 +12,7 @@ class RealmDbProvider : DbProvider<UserRealm, List<User>> {
     override fun insert(us: Iterable<UserRealm>) {
         Realm.getDefaultInstance().use { realm ->
             realm.beginTransaction()
-            realm.copyToRealm(us)
+            realm.copyToRealmOrUpdate(us)
             realm.commitTransaction()
         }
     }

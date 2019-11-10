@@ -49,7 +49,7 @@
                     android:layout_weight="4"
                     android:progressDrawable="@drawable/pb_realm"
                     android:indeterminate="false"
-                    android:progress="10"/>
+                    android:progress="5"/>
 
             <TextView
                     android:id="@+id/tvRealm"
@@ -95,7 +95,7 @@
                     android:layout_weight="4"
                     android:progressDrawable="@drawable/pb_room"
                     android:indeterminate="false"
-                    android:progress="10"/>
+                    android:progress="5"/>
 
             <TextView
                     android:id="@+id/tvRoom"
@@ -141,7 +141,7 @@
                     android:layout_weight="4"
                     android:progressDrawable="@drawable/pb_sql"
                     android:indeterminate="false"
-                    android:progress="10"/>
+                    android:progress="5"/>
 
             <TextView
                     android:id="@+id/tvSql"

@@ -58,16 +58,15 @@ fun UserRoom.toUser() : User = User(
 
 /**
  * @gitUsers - на вход список юзеров из гита
- * @List<R> - на выходе увеличенный в count раз список элементов типа R
+ * @List<R> - на выходе увеличенный в multiplier раз список элементов типа R
  */
-fun <R> multiplyMap(gitUsers : List<UserGit>, mapper : UserGit.() -> R) : List<R> {
+fun <R> multiplyMap(gitUsers : List<UserGit>, multiplier: Int, mapper : UserGit.() -> R) : List<R> {
 
     val li = mutableListOf<R>()
-    val count = 30
 
     val step = gitUsers.map { it.id }.max()!!
 
-    (0 until count).forEach { i ->
+    (0 until multiplier).forEach { i ->
         gitUsers.forEach { user ->
             UserGit().apply {
                 id = user.id + (i * step)

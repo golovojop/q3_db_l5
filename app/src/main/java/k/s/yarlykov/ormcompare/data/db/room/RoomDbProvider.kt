@@ -6,12 +6,12 @@ import k.s.yarlykov.ormcompare.domain.User
 import k.s.yarlykov.ormcompare.domain.UserRoom
 
 @Dao
-interface UserDao : DbProvider<UserRoom, List<User>> {
+interface RoomDbProvider : DbProvider<UserRoom, List<User>> {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     override fun insert(us : Iterable<UserRoom>)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     override fun insert(u: UserRoom)
 
     @Update
@@ -23,7 +23,6 @@ interface UserDao : DbProvider<UserRoom, List<User>> {
     @Query("select * from UserRoom")
     override fun select(): List<User>
 
-    override fun clear() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    @Query("delete from UserRoom")
+    override fun clear()
 }

@@ -1,7 +1,6 @@
 package k.s.yarlykov.ormcompare.data.network
 
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import k.s.yarlykov.ormcompare.domain.UserGit
@@ -31,7 +30,7 @@ object GitHelper {
                     okHttpResponse.body()!!
                 }
             }
-            .observeOn(AndroidSchedulers.mainThread())
+//            .observeOn(AndroidSchedulers.mainThread())
             .subscribe(loadedUsers)
     }
 

@@ -25,7 +25,11 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     @field:Named("realm_repo")
-    lateinit var ormRepo: IRepo
+    lateinit var realmRepo: IRepo
+
+    @Inject
+    @field:Named("room_repo")
+    lateinit var roomRepo: IRepo
 
     @Inject
     @field:Named("sqlite_repo")
@@ -44,7 +48,11 @@ class MainActivity : AppCompatActivity() {
         pbRoom.max = progressBarMax
 
         btnRealm.setOnClickListener {
-            readTest(ormRepo, createResultDrawer(pbRealm, tvRealm))
+            readTest(realmRepo, createResultDrawer(pbRealm, tvRealm))
+        }
+
+        btnRoom.setOnClickListener{
+            readTest(roomRepo, createResultDrawer(pbRoom, tvRoom))
         }
 
         btnSql.setOnClickListener {
@@ -68,11 +76,11 @@ class MainActivity : AppCompatActivity() {
 
         animator.displayedChild = layerLoading
 
-        val realmObs = ormRepo.loadUsers(count = recordsMultiplier)
-        val sqlObs = sqliteRepo.loadUsers(count = recordsMultiplier)
-
         disposables.add(
-            Completable.mergeArray(realmObs, sqlObs)
+            Completable.mergeArray(
+                realmRepo.loadUsers(recordsMultiplier),
+                roomRepo.loadUsers(recordsMultiplier),
+                sqliteRepo.loadUsers(recordsMultiplier))
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe{animator.displayedChild = layerContent}
@@ -105,7 +113,7 @@ class MainActivity : AppCompatActivity() {
         return fun(data : Pair<Int, Long>) {
             val timeEnd = System.currentTimeMillis()
 
-            val result = "${tView.text}\n\nRead ${data.first} records\nTime ${(timeEnd - data.second).toInt()} ms"
+            val result = "Read test:\n\n${data.first} records\n${(timeEnd - data.second).toInt()} ms"
             tView.text = result
 
             logIt("finished in ${(timeEnd - data.second).toInt()} ms")
