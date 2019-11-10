@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
     private val layerLoading = 0
     private val layerContent = 1
 
-    private val progressBarMax = 200
+    private val progressBarMax = 150
 
     private val disposables = CompositeDisposable()
 

@@ -5,6 +5,7 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import k.s.yarlykov.ormcompare.domain.UserGit
 import okhttp3.OkHttpClient
+import okhttp3.Response
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -13,7 +14,6 @@ import java.util.concurrent.TimeUnit
 object GitHelper {
 
     private const val baseUrl = "https://api.github.com/"
-    private const val HTTP_OK = 200
 
     private val api by lazy { initApiAdapter() }
 
@@ -23,7 +23,7 @@ object GitHelper {
         api.getUsers()
             .subscribeOn(Schedulers.io())
             .flatMapObservable { okHttpResponse ->
-                if (okHttpResponse.code() != HTTP_OK) {
+                if (!okHttpResponse.isSuccessful) {
                     throw Throwable("Can't receive Users list")
                 }
                 Observable.fromCallable {
