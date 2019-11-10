@@ -26,6 +26,11 @@ class SqliteDbProvider(private val db: SQLiteDatabase) : DbProvider<UserSqlite, 
         }
     }
 
+    override fun insert(us: Iterable<UserSqlite>) {
+        us.forEach { u ->
+            insert(u)
+        }
+    }
 
     override fun insert(u: UserSqlite) {
         db.insert(tabName, null, initContentValues(u))

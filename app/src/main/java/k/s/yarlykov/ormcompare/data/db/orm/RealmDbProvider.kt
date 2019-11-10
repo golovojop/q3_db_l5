@@ -9,6 +9,14 @@ import k.s.yarlykov.ormcompare.domain.toUser
 
 class RealmDbProvider : DbProvider<UserRealm, List<User>> {
 
+    override fun insert(us: Iterable<UserRealm>) {
+        Realm.getDefaultInstance().use { realm ->
+            realm.beginTransaction()
+            realm.copyToRealm(us)
+            realm.commitTransaction()
+        }
+    }
+
     override fun insert(u: UserRealm) {
         Realm.getDefaultInstance().use { realm ->
             realm.beginTransaction()

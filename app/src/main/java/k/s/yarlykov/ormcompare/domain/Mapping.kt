@@ -63,7 +63,7 @@ fun UserRoom.toUser() : User = User(
 fun <R> multiplyMap(gitUsers : List<UserGit>, mapper : UserGit.() -> R) : List<R> {
 
     val li = mutableListOf<R>()
-    val count = 10
+    val count = 30
 
     val step = gitUsers.map { it.id }.max()!!
 

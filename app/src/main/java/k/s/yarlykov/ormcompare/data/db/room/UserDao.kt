@@ -7,6 +7,10 @@ import k.s.yarlykov.ormcompare.domain.UserRoom
 
 @Dao
 interface UserDao : DbProvider<UserRoom, List<User>> {
+
+    @Insert
+    override fun insert(us : Iterable<UserRoom>)
+
     @Insert
     override fun insert(u: UserRoom)
 

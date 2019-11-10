@@ -10,8 +10,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import k.s.yarlykov.ormcompare.application.OrmApp
 import k.s.yarlykov.ormcompare.repository.IRepo
-import k.s.yarlykov.ormcompare.repository.orm.IOrmRepo
-import k.s.yarlykov.ormcompare.repository.sqlite.ISqliteRepo
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 import javax.inject.Named

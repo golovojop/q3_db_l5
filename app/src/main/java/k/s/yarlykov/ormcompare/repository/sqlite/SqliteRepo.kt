@@ -23,9 +23,10 @@ class SqliteRepo(private val dbSql: DbProvider<UserSqlite, List<User>>) : ISqlit
                     multiplyMap(gitUsers, UserGit::toUserSqlite)
                 }
                 .doOnSuccess { sqliteUsers ->
-                    sqliteUsers.forEach {u ->
-                        dbSql.insert(u)
-                    }
+                    dbSql.insert(sqliteUsers)
+//                    sqliteUsers.forEach {u ->
+//                        dbSql.insert(u)
+//                    }
                 }
         )
 

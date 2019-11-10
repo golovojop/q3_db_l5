@@ -7,7 +7,7 @@ import io.realm.Realm
 import io.realm.RealmConfiguration
 import k.s.yarlykov.ormcompare.data.db.orm.RealmDbProvider
 import k.s.yarlykov.ormcompare.repository.IRepo
-import k.s.yarlykov.ormcompare.repository.orm.OrmRepo
+import k.s.yarlykov.ormcompare.repository.orm.RealmRepo
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -44,7 +44,7 @@ class OrmRealmModule(private val dbName: String) {
     ): IRepo {
         Realm.init(context)
         Realm.setDefaultConfiguration(realmConfig)
-        return OrmRepo(realmDbProvider)
+        return RealmRepo(realmDbProvider)
 
     }
 
