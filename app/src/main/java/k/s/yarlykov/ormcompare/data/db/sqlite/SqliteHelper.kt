@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import k.s.yarlykov.ormcompare.data.db.DbProvider
 import k.s.yarlykov.ormcompare.domain.User
-import k.s.yarlykov.ormcompare.domain.UserRealm
+import k.s.yarlykov.ormcompare.domain.UserSqlite
 
 class SqliteHelper(
     context: Context?,
@@ -22,5 +22,5 @@ class SqliteHelper(
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    fun createDbProvider() : DbProvider<UserRealm, List<User>> = SqliteDbProvider(writableDatabase)
+    fun createDbProvider() : DbProvider<UserSqlite, List<User>> = SqliteDbProvider(writableDatabase)
 }

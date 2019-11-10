@@ -2,9 +2,11 @@
     <string name="app_name">OrmCompare</string>
     <string name="app_title">Orm vs Sql</string>
     <string name="start_realm">realm</string>
+    <string name="start_room">room</string>
     <string name="start_sql">sql</string>
-    <string name="result_realm">REALM</string>
-    <string name="result_room">ROOM</string>
-    <string name="result_sql">SQL</string>
+    <string name="header_realm">REALM</string>
+    <string name="header_room">ROOM</string>
+    <string name="header_sql">SQL</string>
+    <string name="test_result">Result</string>
 
 </resources>

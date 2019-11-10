@@ -28,7 +28,7 @@
                       android:gravity="center_horizontal"
                       app:layout_constraintHorizontal_weight="1"
                       app:layout_constraintBottom_toBottomOf="parent"
-                      app:layout_constraintRight_toLeftOf="@+id/llSql"
+                      app:layout_constraintRight_toLeftOf="@+id/llRoom"
                       app:layout_constraintLeft_toLeftOf="parent"
                       app:layout_constraintTop_toTopOf="parent">
 
@@ -36,7 +36,7 @@
                     android:layout_marginTop="4dp"
                     android:gravity="center"
                     android:textStyle="bold"
-                    android:text="@string/result_realm"
+                    android:text="@string/header_realm"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_weight="1"/>
@@ -44,7 +44,7 @@
             <ProgressBar
                     android:id="@+id/pbRealm"
                     style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="24dp"
+                    android:layout_width="36dp"
                     android:layout_height="0dp"
                     android:layout_weight="4"
                     android:progressDrawable="@drawable/pb_realm"
@@ -56,7 +56,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:text="@string/result_realm"/>
+                    android:layout_marginTop="4dp"
+                    android:text="@string/test_result"/>
 
             <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnRealm"
@@ -69,11 +70,57 @@
         <LinearLayout android:layout_width="0dp"
                       android:layout_height="match_parent"
                       android:orientation="vertical"
+                      android:id="@+id/llRoom"
+                      android:gravity="center_horizontal"
+                      app:layout_constraintHorizontal_weight="1"
+                      app:layout_constraintBottom_toBottomOf="parent"
+                      app:layout_constraintRight_toLeftOf="@+id/llSql"
+                      app:layout_constraintLeft_toRightOf="@id/llRealm"
+                      app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                    android:layout_marginTop="4dp"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:text="@string/header_room"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+
+            <ProgressBar
+                    android:id="@+id/pbRoom"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="36dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="4"
+                    android:progressDrawable="@drawable/pb_room"
+                    android:indeterminate="false"
+                    android:progress="10"/>
+
+            <TextView
+                    android:id="@+id/tvRoom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/test_result"/>
+
+            <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRoom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="@string/start_room"/>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="0dp"
+                      android:layout_height="match_parent"
+                      android:orientation="vertical"
                       android:id="@+id/llSql"
                       android:gravity="center_horizontal"
                       app:layout_constraintHorizontal_weight="1"
                       app:layout_constraintBottom_toBottomOf="parent"
-                      app:layout_constraintLeft_toRightOf="@+id/llRealm"
+                      app:layout_constraintLeft_toRightOf="@+id/llRoom"
                       app:layout_constraintRight_toRightOf="parent"
                       app:layout_constraintTop_toTopOf="parent">
 
@@ -81,7 +128,7 @@
                     android:layout_marginTop="4dp"
                     android:gravity="center"
                     android:textStyle="bold"
-                    android:text="@string/result_sql"
+                    android:text="@string/header_sql"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_weight="1"/>
@@ -89,7 +136,7 @@
             <ProgressBar
                     android:id="@+id/pbSql"
                     style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="24dp"
+                    android:layout_width="36dp"
                     android:layout_height="0dp"
                     android:layout_weight="4"
                     android:progressDrawable="@drawable/pb_sql"
@@ -101,7 +148,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:text="@string/result_sql"/>
+                    android:layout_marginTop="4dp"
+                    android:text="@string/test_result"/>
 
             <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSql"

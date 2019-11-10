@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity() {
 
         pbRealm.max = progressBarMax
         pbSql.max = progressBarMax
+        pbRoom.max = progressBarMax
 
         btnRealm.setOnClickListener {
             readTest(ormRepo, createResultDrawer(pbRealm, tvRealm))
