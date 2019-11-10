@@ -24,9 +24,6 @@ class SqliteRepo(private val dbSql: DbProvider<UserSqlite, List<User>>) : ISqlit
                 }
                 .doOnSuccess { sqliteUsers ->
                     dbSql.insert(sqliteUsers)
-//                    sqliteUsers.forEach {u ->
-//                        dbSql.insert(u)
-//                    }
                 }
         )
 
