@@ -1,7 +1,10 @@
 package k.s.yarlykov.ormcompare.data.network
 
-import io.reactivex.Single
-import k.s.yarlykov.ormcompare.data.model.github.GitUser
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.BehaviorSubject
+import k.s.yarlykov.ormcompare.domain.UserGit
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -15,17 +18,25 @@ object GitHelper {
 
     private val api by lazy { initApiAdapter() }
 
-    fun getUsers() : Single<List<GitUser>> {
-        return api
-            .getUsers()
-            .flatMap {okHttpResponse ->
-                if(okHttpResponse.code() != HTTP_OK) {
+    private val loadedUsers = BehaviorSubject.create<List<UserGit>>()
+
+    init {
+        api.getUsers()
+            .subscribeOn(Schedulers.io())
+            .flatMapObservable { okHttpResponse ->
+                if (okHttpResponse.code() != HTTP_OK) {
                     throw Throwable("Can't receive Users list")
                 }
-                Single.fromCallable {
+                Observable.fromCallable {
                     okHttpResponse.body()!!
                 }
             }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(loadedUsers)
+    }
+
+    fun getUsers(): Observable<List<UserGit>> {
+        return loadedUsers.hide()
     }
 
     private fun initApiAdapter(): GitApi {
