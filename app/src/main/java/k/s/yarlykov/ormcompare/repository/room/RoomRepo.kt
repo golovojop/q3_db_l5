@@ -4,30 +4,23 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import k.s.yarlykov.ormcompare.data.db.room.RoomDbProvider
-import k.s.yarlykov.ormcompare.domain.*
-import k.s.yarlykov.ormcompare.logIt
+import k.s.yarlykov.ormcompare.domain.User
+import k.s.yarlykov.ormcompare.domain.UserGit
+import k.s.yarlykov.ormcompare.domain.multiplyMap
+import k.s.yarlykov.ormcompare.domain.toUserRoom
 
 class RoomRepo(private val userDao: RoomDbProvider) : IRoomRepo {
 
-    private val users = mutableListOf<UserRoom>()
-    private val completable = Completable.fromAction {
-        userDao.insert(users)
-    }
-
-    override fun loadUsers(dataSource: Observable<List<UserGit>>, multiplier: Int): Completable {
+    override fun loadFromGithub(dataSource: Observable<List<UserGit>>, multiplier: Int): Completable =
         dataSource
             .map { gitUsers ->
-                logIt("RoomRepo::loadUsers::map ${Thread.currentThread().name}")
                 multiplyMap(gitUsers, multiplier, UserGit::toUserRoom)
             }
             .doOnNext { roomUsers ->
-                logIt("RoomRepo::loadUsers::doOnNext ${Thread.currentThread().name}")
-                users.addAll(roomUsers)
+                userDao.insert(roomUsers)
             }
-            .subscribe()
+            .ignoreElements()
 
-        return completable
-    }
 
     override fun getUsers(): Single<List<User>> {
         return Single.fromCallable {

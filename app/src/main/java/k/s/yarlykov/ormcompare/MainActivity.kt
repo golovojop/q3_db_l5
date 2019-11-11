@@ -22,6 +22,9 @@ class MainActivity : AppCompatActivity() {
 
     private val progressBarMax = 200
 
+    // Во сколько раз увеличить кол-во записей полученных из инета
+    private val recordsMultiplier = 30
+
     private val disposables = CompositeDisposable()
 
     @Inject
@@ -36,54 +39,36 @@ class MainActivity : AppCompatActivity() {
     @field:Named("sqlite_repo")
     lateinit var sqliteRepo: IRepo
 
+    @Inject
+    lateinit var gitHelper : GitHelper
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         (application as OrmApp).appComponent.inject(this)
 
-        setTitle(R.string.app_title)
-
-        pbRealm.max = progressBarMax
-        pbSql.max = progressBarMax
-        pbRoom.max = progressBarMax
-
-        btnRealm.setOnClickListener {
-            readTest(realmRepo, createResultDrawer(pbRealm, tvRealm))
-        }
-
-        btnRoom.setOnClickListener{
-            readTest(roomRepo, createResultDrawer(pbRoom, tvRoom))
-        }
-
-        btnSql.setOnClickListener {
-            readTest(sqliteRepo, createResultDrawer(pbSql, tvSql))
-        }
-
+        initViews()
         loadFromNetwork()
     }
+
 
     override fun onDestroy() {
         super.onDestroy()
         disposables.clear()
-
-        sqliteRepo.clearUsers()
     }
 
     private fun loadFromNetwork() {
 
-        // Во сколько раз увеличить кол-во записей полученных из инета
-        val recordsMultiplier = 30
-
         animator.displayedChild = layerLoading
 
-        val dataSource = GitHelper.getUsers()
+        val dataSource = gitHelper.getUsers()
 
         disposables.add(
             Completable.mergeArray(
-                realmRepo.loadUsers(dataSource, recordsMultiplier),
-                roomRepo.loadUsers(dataSource, recordsMultiplier),
-                sqliteRepo.loadUsers(dataSource, recordsMultiplier))
+                realmRepo.loadFromGithub(dataSource, recordsMultiplier),
+                roomRepo.loadFromGithub(dataSource, recordsMultiplier),
+                sqliteRepo.loadFromGithub(dataSource, recordsMultiplier))
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe{animator.displayedChild = layerContent}
@@ -92,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         dataSource.connect()
     }
 
-    private fun readTest(repo : IRepo, resultHandler : (Pair<Int, Long>) -> Unit ) {
+    private fun executeReadTest(repo : IRepo, resultHandler : (Pair<Int, Long>) -> Unit ) {
 
         val timeStart : Long = System.currentTimeMillis()
         var records = 0
@@ -100,7 +85,7 @@ class MainActivity : AppCompatActivity() {
         disposables.add(
             // Чтение из базы в массив
             repo.getUsers()
-                .subscribeOn(Schedulers.computation())
+                .subscribeOn(Schedulers.io())
                 .doOnSuccess {
                     records = it.size
                 }
@@ -130,5 +115,23 @@ class MainActivity : AppCompatActivity() {
         logIt(t.message.toString())
     }
 
-//    private val setupWatcher = SingleObserver<List<>>
+    private fun initViews() {
+        setTitle(R.string.app_title)
+
+        pbRealm.max = progressBarMax
+        pbSql.max = progressBarMax
+        pbRoom.max = progressBarMax
+
+        btnRealm.setOnClickListener {
+            executeReadTest(realmRepo, createResultDrawer(pbRealm, tvRealm))
+        }
+
+        btnRoom.setOnClickListener{
+            executeReadTest(roomRepo, createResultDrawer(pbRoom, tvRoom))
+        }
+
+        btnSql.setOnClickListener {
+            executeReadTest(sqliteRepo, createResultDrawer(pbSql, tvSql))
+        }
+    }
 }

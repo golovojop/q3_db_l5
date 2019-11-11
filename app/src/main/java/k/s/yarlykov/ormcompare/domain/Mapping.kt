@@ -70,7 +70,7 @@ fun <R> multiplyMap(gitUsers : List<UserGit>, multiplier: Int, mapper : UserGit.
         gitUsers.forEach { user ->
             UserGit().apply {
                 id = user.id + (i * step)
-                login = "${user.login.rotate(1)}_$id"
+                login = "${user.login}_$id"
                 avatarUrl = user.avatarUrl
                 reposUrl = user.reposUrl
 

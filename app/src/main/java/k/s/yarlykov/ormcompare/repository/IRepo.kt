@@ -8,7 +8,7 @@ import k.s.yarlykov.ormcompare.domain.UserGit
 
 interface IRepo {
     fun getUsers(): Single<List<User>>
-    fun loadUsers(dataSource: Observable<List<UserGit>>, multiplier : Int = 1) : Completable
+    fun loadFromGithub(dataSource: Observable<List<UserGit>>, multiplier : Int = 1) : Completable
     fun clearUsers()
 }
 

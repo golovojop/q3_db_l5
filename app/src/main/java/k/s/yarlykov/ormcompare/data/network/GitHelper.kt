@@ -10,14 +10,10 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-object GitHelper {
-
-    private const val baseUrl = "https://api.github.com/"
-
-    private val api by lazy { initApiAdapter() }
+class GitHelper(val gitApi: GitApi) {
 
     fun getUsers(): ConnectableObservable<List<UserGit>> =
-        api.getUsers()
+        gitApi.getUsers()
             .map { okHttpResponse ->
                 logIt("GitHelper::getUsers okHttpResponse.code = ${okHttpResponse.code()}")
                 if (!okHttpResponse.isSuccessful) {
@@ -30,22 +26,4 @@ object GitHelper {
                 logIt("GitHelper::getUsers::doOnNext ${Thread.currentThread().name}")
             }
             .replay()
-
-    private fun initApiAdapter(): GitApi {
-        // Установить таймауты
-        val okHttpClient = OkHttpClient().newBuilder()
-            .connectTimeout(5, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
-            .writeTimeout(10, TimeUnit.SECONDS)
-            .build()
-
-        val adapter = Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .build()
-
-        return adapter.create(GitApi::class.java)
-    }
 }

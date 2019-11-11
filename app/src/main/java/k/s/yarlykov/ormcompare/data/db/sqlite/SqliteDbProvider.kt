@@ -18,6 +18,8 @@ class SqliteDbProvider(private val db: SQLiteDatabase) : DbProvider<UserSqlite, 
 
         fun createTable(db: SQLiteDatabase) {
 
+            logIt("SqliteDbProvider::createTable")
+
             val query = "CREATE TABLE " + tabName + " (" +
                     colId + " INTEGER PRIMARY KEY NOT NULL, " +
                     colLogin + " TEXT NOT NULL, " +
@@ -34,11 +36,8 @@ class SqliteDbProvider(private val db: SQLiteDatabase) : DbProvider<UserSqlite, 
     }
 
     override fun insert(u: UserSqlite) {
-        try {
-            db.insert(tabName, null, initContentValues(u))
-        } catch (e: Exception) {
-            logIt("Record with id ${u.id} already exists")
-        }
+        logIt("SqliteDbProvider::insert tabName=$tabName, u.id=${u.id}")
+        db.insert(tabName, null, initContentValues(u))
     }
 
     override fun update(u: UserSqlite) {

@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import k.s.yarlykov.ormcompare.data.network.GitApi
+import k.s.yarlykov.ormcompare.data.network.GitHelper
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import retrofit2.CallAdapter
@@ -65,5 +66,10 @@ class NetworkModule(private val baseUrl: String) {
     @Singleton
     fun provideGitApi(retrofit: Retrofit): GitApi =
         retrofit.create(GitApi::class.java)
+
+
+    @Provides
+    @Singleton
+    fun provideGitHelper(gitApi: GitApi) : GitHelper = GitHelper(gitApi)
 
 }
