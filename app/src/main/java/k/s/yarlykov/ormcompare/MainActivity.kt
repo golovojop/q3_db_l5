@@ -9,6 +9,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import k.s.yarlykov.ormcompare.application.OrmApp
+import k.s.yarlykov.ormcompare.data.network.GitHelper
 import k.s.yarlykov.ormcompare.repository.IRepo
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
@@ -19,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     private val layerLoading = 0
     private val layerContent = 1
 
-    private val progressBarMax = 150
+    private val progressBarMax = 200
 
     private val disposables = CompositeDisposable()
 
@@ -76,15 +77,19 @@ class MainActivity : AppCompatActivity() {
 
         animator.displayedChild = layerLoading
 
+        val dataSource = GitHelper.getUsers()
+
         disposables.add(
             Completable.mergeArray(
-                realmRepo.loadUsers(recordsMultiplier),
-                roomRepo.loadUsers(recordsMultiplier),
-                sqliteRepo.loadUsers(recordsMultiplier))
+                realmRepo.loadUsers(dataSource, recordsMultiplier),
+                roomRepo.loadUsers(dataSource, recordsMultiplier),
+                sqliteRepo.loadUsers(dataSource, recordsMultiplier))
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe{animator.displayedChild = layerContent}
         )
+
+        dataSource.connect()
     }
 
     private fun readTest(repo : IRepo, resultHandler : (Pair<Int, Long>) -> Unit ) {
@@ -124,4 +129,6 @@ class MainActivity : AppCompatActivity() {
     private fun printError(t: Throwable) {
         logIt(t.message.toString())
     }
+
+//    private val setupWatcher = SingleObserver<List<>>
 }

@@ -1,29 +1,33 @@
 package k.s.yarlykov.ormcompare.repository.orm
 
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
 import k.s.yarlykov.ormcompare.data.db.DbProvider
-import k.s.yarlykov.ormcompare.data.network.GitHelper
 import k.s.yarlykov.ormcompare.domain.*
 import k.s.yarlykov.ormcompare.logIt
-import k.s.yarlykov.ormcompare.rotate
 
 class RealmRepo(private val dbRealm: DbProvider<UserRealm, List<User>>) : IRealmRepo {
 
-    override fun loadUsers(multiplier : Int): Completable =
-        Completable.fromSingle(
-            GitHelper.getUsers()
-                .doOnNext{
-                    logIt("RealmRepo::doOnNext thread - ${Thread.currentThread().name}")
-                }
-                .firstOrError()
+    private val users = mutableListOf<UserRealm>()
+    private val completable = Completable.fromAction {
+        dbRealm.insert(users)
+    }
+
+    override fun loadUsers(dataSource: Observable<List<UserGit>>, multiplier : Int): Completable {
+            dataSource
                 .map { gitUsers ->
+                    logIt("RealmRepo::loadUsers::map ${Thread.currentThread().name}")
                     multiplyMap(gitUsers, multiplier, UserGit::toUserRealm)
                 }
-                .doOnSuccess { realmUsers ->
-                    logIt("RealmRepo::doOnSuccess thread - ${Thread.currentThread().name}")
-                    dbRealm.insert(realmUsers)
-                })
+                .doOnNext { realmUsers ->
+                    logIt("RealmRepo::loadUsers::doOnNext ${Thread.currentThread().name}")
+                    users.addAll(realmUsers)
+                }
+                .subscribe()
+
+            return completable
+        }
 
     //    @RequiresApi(api = Build.VERSION_CODES.N)
     override fun getUsers(): Single<List<User>> {

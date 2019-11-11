@@ -1,12 +1,18 @@
 package k.s.yarlykov.ormcompare.application
 
 import android.app.Application
+import io.reactivex.Observer
+import io.reactivex.observables.ConnectableObservable
+import io.reactivex.schedulers.Schedulers
+import k.s.yarlykov.ormcompare.data.network.GitHelper
 import k.s.yarlykov.ormcompare.di.component.AppComponent
 import k.s.yarlykov.ormcompare.di.component.DaggerAppComponent
 import k.s.yarlykov.ormcompare.di.module.AppModule
 import k.s.yarlykov.ormcompare.di.module.OrmRealmModule
 import k.s.yarlykov.ormcompare.di.module.OrmRoomModule
 import k.s.yarlykov.ormcompare.di.module.SqliteModule
+import k.s.yarlykov.ormcompare.domain.UserGit
+import k.s.yarlykov.ormcompare.logIt
 
 class OrmApp : Application() {
 

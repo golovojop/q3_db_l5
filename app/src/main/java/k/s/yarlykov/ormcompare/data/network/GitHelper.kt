@@ -1,11 +1,10 @@
 package k.s.yarlykov.ormcompare.data.network
 
-import io.reactivex.Observable
+import io.reactivex.observables.ConnectableObservable
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.BehaviorSubject
 import k.s.yarlykov.ormcompare.domain.UserGit
+import k.s.yarlykov.ormcompare.logIt
 import okhttp3.OkHttpClient
-import okhttp3.Response
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -17,26 +16,20 @@ object GitHelper {
 
     private val api by lazy { initApiAdapter() }
 
-    private val loadedUsers = BehaviorSubject.create<List<UserGit>>()
-
-    init {
+    fun getUsers(): ConnectableObservable<List<UserGit>> =
         api.getUsers()
-            .subscribeOn(Schedulers.io())
-            .flatMapObservable { okHttpResponse ->
+            .map { okHttpResponse ->
+                logIt("GitHelper::getUsers okHttpResponse.code = ${okHttpResponse.code()}")
                 if (!okHttpResponse.isSuccessful) {
                     throw Throwable("Can't receive Users list")
                 }
-                Observable.fromCallable {
-                    okHttpResponse.body()!!
-                }
+                okHttpResponse.body()!!
             }
-//            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(loadedUsers)
-    }
-
-    fun getUsers(): Observable<List<UserGit>> {
-        return loadedUsers.hide()
-    }
+            .subscribeOn(Schedulers.io())
+            .doOnNext {
+                logIt("GitHelper::getUsers::doOnNext ${Thread.currentThread().name}")
+            }
+            .replay()
 
     private fun initApiAdapter(): GitApi {
         // Установить таймауты
