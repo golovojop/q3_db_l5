@@ -9,10 +9,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import k.s.yarlykov.ormcompare.application.OrmApp
+import k.s.yarlykov.ormcompare.data.network.GitHelper
 import k.s.yarlykov.ormcompare.repository.IRepo
-import k.s.yarlykov.ormcompare.repository.orm.IOrmRepo
-import k.s.yarlykov.ormcompare.repository.sqlite.ISqliteRepo
 import kotlinx.android.synthetic.main.activity_main.*
+import javax.inject.Inject
+import javax.inject.Named
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,60 +22,62 @@ class MainActivity : AppCompatActivity() {
 
     private val progressBarMax = 200
 
+    // Во сколько раз увеличить кол-во записей полученных из инета
+    private val recordsMultiplier = 30
+
     private val disposables = CompositeDisposable()
 
-    private lateinit var ormRepo: IOrmRepo
-    private lateinit var sqliteRepo: ISqliteRepo
+    @Inject
+    @field:Named("realm_repo")
+    lateinit var realmRepo: IRepo
+
+    @Inject
+    @field:Named("room_repo")
+    lateinit var roomRepo: IRepo
+
+    @Inject
+    @field:Named("sqlite_repo")
+    lateinit var sqliteRepo: IRepo
+
+    @Inject
+    lateinit var gitHelper : GitHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        setTitle(R.string.app_title)
+        (application as OrmApp).appComponent.inject(this)
 
-        pbRealm.max = progressBarMax
-        pbSql.max = progressBarMax
-
-        ormRepo = OrmApp.getInstance().getOrmRepo()
-        sqliteRepo = OrmApp.getInstance().getSqliteRepo()
-
-        btnRealm.setOnClickListener {
-            readTest(ormRepo, createResultDrawer(pbRealm, tvOrm))
-        }
-
-        btnSql.setOnClickListener {
-            readTest(sqliteRepo, createResultDrawer(pbSql, tvSql))
-        }
-
+        initViews()
         loadFromNetwork()
     }
+
 
     override fun onDestroy() {
         super.onDestroy()
         disposables.clear()
-
-        sqliteRepo.clearUsers()
     }
 
     private fun loadFromNetwork() {
 
-        // Во сколько раз увеличить кол-во записей полученных из инета
-        val recordsMultiplier = 30
-
         animator.displayedChild = layerLoading
 
-        val realmObs = ormRepo.loadUsers(count = recordsMultiplier)
-        val sqlObs = sqliteRepo.loadUsers(count = recordsMultiplier)
+        val dataSource = gitHelper.getUsers()
 
         disposables.add(
-            Completable.mergeArray(realmObs, sqlObs)
+            Completable.mergeArray(
+                realmRepo.loadFromGithub(dataSource, recordsMultiplier),
+                roomRepo.loadFromGithub(dataSource, recordsMultiplier),
+                sqliteRepo.loadFromGithub(dataSource, recordsMultiplier))
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe{animator.displayedChild = layerContent}
         )
+
+        dataSource.connect()
     }
 
-    private fun readTest(repo : IRepo, resultHandler : (Pair<Int, Long>) -> Unit ) {
+    private fun executeReadTest(repo : IRepo, resultHandler : (Pair<Int, Long>) -> Unit ) {
 
         val timeStart : Long = System.currentTimeMillis()
         var records = 0
@@ -82,7 +85,7 @@ class MainActivity : AppCompatActivity() {
         disposables.add(
             // Чтение из базы в массив
             repo.getUsers()
-                .subscribeOn(Schedulers.computation())
+                .subscribeOn(Schedulers.io())
                 .doOnSuccess {
                     records = it.size
                 }
@@ -100,7 +103,7 @@ class MainActivity : AppCompatActivity() {
         return fun(data : Pair<Int, Long>) {
             val timeEnd = System.currentTimeMillis()
 
-            val result = "${tView.text}\n\nRead ${data.first} records\nTime ${(timeEnd - data.second).toInt()} ms"
+            val result = "Read test:\n\n${data.first} records\n${(timeEnd - data.second).toInt()} ms"
             tView.text = result
 
             logIt("finished in ${(timeEnd - data.second).toInt()} ms")
@@ -110,5 +113,25 @@ class MainActivity : AppCompatActivity() {
 
     private fun printError(t: Throwable) {
         logIt(t.message.toString())
+    }
+
+    private fun initViews() {
+        setTitle(R.string.app_title)
+
+        pbRealm.max = progressBarMax
+        pbSql.max = progressBarMax
+        pbRoom.max = progressBarMax
+
+        btnRealm.setOnClickListener {
+            executeReadTest(realmRepo, createResultDrawer(pbRealm, tvRealm))
+        }
+
+        btnRoom.setOnClickListener{
+            executeReadTest(roomRepo, createResultDrawer(pbRoom, tvRoom))
+        }
+
+        btnSql.setOnClickListener {
+            executeReadTest(sqliteRepo, createResultDrawer(pbSql, tvSql))
+        }
     }
 }

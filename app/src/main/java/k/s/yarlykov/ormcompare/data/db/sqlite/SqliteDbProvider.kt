@@ -4,9 +4,10 @@ import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import k.s.yarlykov.ormcompare.data.db.DbProvider
 import k.s.yarlykov.ormcompare.domain.User
-import k.s.yarlykov.ormcompare.domain.UserRealm
+import k.s.yarlykov.ormcompare.domain.UserSqlite
+import k.s.yarlykov.ormcompare.logIt
 
-class SqliteDbProvider(private val db: SQLiteDatabase) : DbProvider<UserRealm, List<User>> {
+class SqliteDbProvider(private val db: SQLiteDatabase) : DbProvider<UserSqlite, List<User>> {
 
     companion object {
         private const val tabName = "User"
@@ -17,6 +18,8 @@ class SqliteDbProvider(private val db: SQLiteDatabase) : DbProvider<UserRealm, L
 
         fun createTable(db: SQLiteDatabase) {
 
+            logIt("SqliteDbProvider::createTable")
+
             val query = "CREATE TABLE " + tabName + " (" +
                     colId + " INTEGER PRIMARY KEY NOT NULL, " +
                     colLogin + " TEXT NOT NULL, " +
@@ -26,16 +29,22 @@ class SqliteDbProvider(private val db: SQLiteDatabase) : DbProvider<UserRealm, L
         }
     }
 
+    override fun insert(us: Iterable<UserSqlite>) {
+        us.forEach { u ->
+            insert(u)
+        }
+    }
 
-    override fun insert(u: UserRealm) {
+    override fun insert(u: UserSqlite) {
+        logIt("SqliteDbProvider::insert tabName=$tabName, u.id=${u.id}")
         db.insert(tabName, null, initContentValues(u))
     }
 
-    override fun update(u: UserRealm) {
+    override fun update(u: UserSqlite) {
         db.update(tabName, initContentValues(u), "login = ${u.login}", null)
     }
 
-    override fun delete(u: UserRealm) {
+    override fun delete(u: UserSqlite) {
         db.delete(tabName, "login = ${u.login}", null)
     }
 
@@ -72,12 +81,12 @@ class SqliteDbProvider(private val db: SQLiteDatabase) : DbProvider<UserRealm, L
         db.execSQL("delete from $tabName")
     }
 
-    private fun initContentValues(userRealm: UserRealm): ContentValues {
+    private fun initContentValues(userSqlite: UserSqlite): ContentValues {
         return ContentValues().apply {
-            this.put(colId, userRealm.id)
-            this.put(colLogin, userRealm.login)
-            this.put(colAvatar, userRealm.avatarUrl)
-            this.put(colReposUrl, userRealm.reposUrl)
+            this.put(colId, userSqlite.id)
+            this.put(colLogin, userSqlite.login)
+            this.put(colAvatar, userSqlite.avatarUrl)
+            this.put(colReposUrl, userSqlite.reposUrl)
         }
     }
 }

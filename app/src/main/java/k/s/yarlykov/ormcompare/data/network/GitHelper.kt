@@ -1,59 +1,29 @@
 package k.s.yarlykov.ormcompare.data.network
 
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.observables.ConnectableObservable
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.BehaviorSubject
 import k.s.yarlykov.ormcompare.domain.UserGit
+import k.s.yarlykov.ormcompare.logIt
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-object GitHelper {
+class GitHelper(val gitApi: GitApi) {
 
-    private const val baseUrl = "https://api.github.com/"
-    private const val HTTP_OK = 200
-
-    private val api by lazy { initApiAdapter() }
-
-    private val loadedUsers = BehaviorSubject.create<List<UserGit>>()
-
-    init {
-        api.getUsers()
-            .subscribeOn(Schedulers.io())
-            .flatMapObservable { okHttpResponse ->
-                if (okHttpResponse.code() != HTTP_OK) {
+    fun getUsers(): ConnectableObservable<List<UserGit>> =
+        gitApi.getUsers()
+            .map { okHttpResponse ->
+                logIt("GitHelper::getUsers okHttpResponse.code = ${okHttpResponse.code()}")
+                if (!okHttpResponse.isSuccessful) {
                     throw Throwable("Can't receive Users list")
                 }
-                Observable.fromCallable {
-                    okHttpResponse.body()!!
-                }
+                okHttpResponse.body()!!
             }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(loadedUsers)
-    }
-
-    fun getUsers(): Observable<List<UserGit>> {
-        return loadedUsers.hide()
-    }
-
-    private fun initApiAdapter(): GitApi {
-        // Установить таймауты
-        val okHttpClient = OkHttpClient().newBuilder()
-            .connectTimeout(5, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
-            .writeTimeout(10, TimeUnit.SECONDS)
-            .build()
-
-        val adapter = Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .build()
-
-        return adapter.create(GitApi::class.java)
-    }
+            .subscribeOn(Schedulers.io())
+            .doOnNext {
+                logIt("GitHelper::getUsers::doOnNext ${Thread.currentThread().name}")
+            }
+            .replay()
 }
